@@ -1,0 +1,71 @@
+create database test61119a
+use test61119a
+
+create table Reg
+(
+  id int primary key identity,
+  name varchar(50),
+  gender varchar(50),
+  country varchar(50),
+  inserted_date date,
+  status int default 0
+)
+-----------------------------------------------------------------
+create table Country
+(
+  cid int primary key identity,
+  cname varchar(50)
+)
+insert into Country(cname)values('IND')
+insert into Country(cname)values('PAK')
+insert into Country(cname)values('BEG')
+
+select *from Reg
+select *from Country
+-----------------------------------------------------------------
+alter proc usp_Reg
+@action varchar(50)=null,
+@id int=0,
+@name varchar(50)=null,
+@gender varchar(50)=null,
+@country varchar(50)=null
+as
+begin
+      if(@action='insert')
+	  begin
+	  insert into Reg(name,gender,country,inserted_date)values(@name,@gender,@country,GETDATE()) 
+	  end
+
+      else if(@action='bindcon')
+	  begin
+	  select *from Country
+	  end
+
+      else if(@action='show')
+	  begin
+	  select *from Reg where status=0
+	  end
+
+      else if(@action='delete')
+	  begin
+	  update Reg set status=1  where id=@id
+	  end
+
+      else if(@action='edit')
+	  begin
+	  select *from Reg where id=@id
+	  end
+
+      else if(@action='update')
+	  begin
+	  update Reg set name=@name,gender=@gender,country=@country where id=@id 
+	  end
+
+      else if(@action='join')
+	  begin
+	  select *from Reg inner join Country
+	  on Reg.country = Country.cid where status = 0
+	  end
+end
+
+select *from Reg
